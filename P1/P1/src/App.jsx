@@ -1,8 +1,26 @@
 import { Routes, Route, Link } from "react-router-dom";
 import Contacts from "/src/pages/contacts.jsx";
 import Team from "/src/pages/team.jsx";
+import Books from "/src/pages/books.jsx";
+import books from "/src/utils/books.js";
+import BookDetails from "/src/pages/bookdetails.jsx";
+import AddBook from "/src/pages/addbook.jsx";
+import { useState, useEffect } from "react";
 
 function App() {
+  const [bookList, setBookList] = useState(() => {
+    const saved = localStorage.getItem("bookList");
+    return saved ? JSON.parse(saved) : books;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("bookList", JSON.stringify(bookList));
+  }, [bookList]);
+
+  const handleAddBook = (newBook) => {
+    setBookList([...bookList, newBook]);
+  };
+
   return (
     <div className="container">
       {/* Navbar */}
@@ -22,9 +40,9 @@ function App() {
             </Link>
           </li>
           <li>
-            <a href="#" className="nav-link px-2">
+            <Link to="/books" className="nav-link px-2">
               Book
-            </a>
+            </Link>
           </li>
           <li>
             <Link to="/team" className="nav-link px-2">
@@ -47,11 +65,16 @@ function App() {
         </div>
       </header>
 
-      {/* Page Content */}
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/books" element={<Books books={bookList} />} />
         <Route path="/team" element={<Team />} />
         <Route path="/contacts" element={<Contacts />} />
+        <Route path="/books/:id" element={<BookDetails books={bookList} />} />
+        <Route
+          path="/books/add"
+          element={<AddBook onAddBook={handleAddBook} />}
+        />
       </Routes>
     </div>
   );
